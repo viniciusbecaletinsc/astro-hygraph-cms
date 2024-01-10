@@ -1,4 +1,6 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
 export async function getStaticPaths() {
   const query = {
     method: "POST",
@@ -41,6 +43,7 @@ const query = {
     query: `
       {
         platform(where: {slug: "${platform}"}) {
+          name,
           config {
             heroImage {
               url
@@ -55,8 +58,11 @@ const query = {
 const response = await fetch(import.meta.env.HYGRAPH_ENDPOINT, query);
 const json = await response.json();
 
-const { heroImage } = json.data.platform.config;
+const { name, config } = json.data.platform;
+const { heroImage } = config;
 ---
 
-<h1>{platform}</h1>
-<img src={heroImage.url} />
+<BaseLayout title={name}>
+  <h1>{name}</h1>
+  <img src={heroImage.url} />
+</BaseLayout>
