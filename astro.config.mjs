@@ -4,6 +4,5 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   redirects: {
     "/": "/promo",
-    "/polgo": "/promo",
   },
 });
