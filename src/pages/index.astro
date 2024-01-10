@@ -1,0 +1,57 @@
+---
+interface LandingPages {
+	id: string
+	name: string
+	config: {
+		heroImage: {
+			url: string
+		}
+	}
+}
+
+const query = {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    query: `
+      {
+        landingPages {
+    id
+    name
+    config {
+			heroImage {
+				url
+      }
+    }
+  }
+      }`,
+  }),
+};
+
+
+const response = await fetch(import.meta.env.HYGRAPH_ENDPOINT, query);
+const json = await response.json();
+const landingPages: LandingPages[] = json.data.landingPages;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Astro</h1>
+		{
+			landingPages.map((landingPage) => (
+				<div>
+					<h2>{landingPage.name}</h2>
+					<p>{landingPage.id}</p>
+					<img src={landingPage.config.heroImage.url} />
+				</div>
+			))
+		}
+	</body>
+</html>

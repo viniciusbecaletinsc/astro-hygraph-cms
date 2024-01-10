@@ -1,0 +1,62 @@
+---
+export async function getStaticPaths() {
+  const query = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `
+      {
+        platforms {
+          slug
+        }
+      }
+    `,
+    }),
+  };
+
+  const response = await fetch(import.meta.env.HYGRAPH_ENDPOINT, query);
+  const json = await response.json();
+
+  console.log(json);
+
+  const paths = json.data.platforms.map((page) => ({
+    params: { platform: page.slug },
+  }));
+
+  return paths;
+}
+
+const { platform } = Astro.params;
+
+console.log(platform);
+
+const query = {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    query: `
+      {
+        platform(where: {slug: "${platform}"}) {
+          config {
+            heroImage {
+              url
+            }
+          }
+        }
+      }
+    `,
+  }),
+};
+
+const response = await fetch(import.meta.env.HYGRAPH_ENDPOINT, query);
+const json = await response.json();
+
+const { heroImage } = json.data.platform.config;
+---
+
+<h1>{platform}</h1>
+<img src={heroImage.url} />
